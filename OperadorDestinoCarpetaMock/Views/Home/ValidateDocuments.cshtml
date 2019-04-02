@@ -1,0 +1,62 @@
+﻿@model IEnumerable<OperadorDestinoCarpetaMock.DocumentService.document>
+
+@{
+    ViewBag.Title = "ValidateDocuments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Verificar Documentos</h2>
+<hr />
+<p>Ingresa el número de documento de un cliente para visualizarlos los documentos del cliente que fue registrado en otro operador.</p>
+@using (Html.BeginForm("ValidateDocuments", "Home", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="exampleInputEmail1">Numero de documento</label>
+        <input type="text" class="form-control" id="idNumberDocument" name="idNumberDocument" placeholder="Ingresa el número de documento">
+    </div>
+    <button type="submit" class="btn btn-primary">Consultar</button>
+}
+
+@if (Model != null && Model.Any())
+{
+    <br />
+    <br />
+    <table class="table table-bordered table-responsive table-hover">
+        <tr>
+            <th>Nombre de archivo</th>
+            <th>Fecha de modificación</th>
+            <th align="center">Detalle</th>
+            <th align="center">Migrar</th>
+        </tr>
+        @foreach (var document in Model)
+        {
+            <tr>
+                <td>@document.name</td>
+                <td>@document.modifiedDate</td>
+                <td>@Html.ActionLink("View", "Detail", new { fullPath = document.fullPath })</td>
+                <td><a onclick="migrateFile('@document.fullPath')"><i class="fas fa-arrow-up"></i></a></td>
+            </tr>
+        }
+    </table>
+}
+@if (Model != null && !Model.Any())
+{
+    <br />
+    <br />
+    <div class="alert alert-danger" role="alert">
+        No se encontraron documentos.
+    </div>
+}
+<script>
+    function migrateFile(fullPath) {
+        $.ajax({
+            type: "POST",
+            url: '../Home/Migrate',
+            data: { 'fullPath': fullPath },
+            success: function (response) {
+                debugger
+                location.reload();
+            }
+        })
+    }
+</script>
